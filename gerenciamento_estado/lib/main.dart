@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_estado/classes/counter_state.dart';
+import 'package:gerenciamento_estado/controllers/state_observable.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,10 +31,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final counterState = CounterState();
+  final observableCounter = StateObservable(0);
 
   @override
   void initState() {
     counterState.addListener(callback);
+    observableCounter.addListener(callback);
     super.initState();
   }
 
@@ -51,12 +54,23 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Valor do estado: ${counterState.counter}"),
+            Text("Valor do estado do ChangeState: ${counterState.counter}"),
+            const SizedBox(height: 5),
             ElevatedButton(
               onPressed: () {
                 counterState.increment();
               }, 
-              child:  const Text("Incrementar")),
+              child:  const Text("Incrementar"),
+            ),
+            const SizedBox(height: 20),
+            Text("Valor do estado do StateObserver: ${observableCounter.state}"),
+            const SizedBox(height: 5),
+            ElevatedButton(
+              onPressed: () {
+                observableCounter.state++;
+              }, 
+              child:  const Text("Incrementar"),
+            ),
           ],
         ),
       ),
@@ -66,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() { 
     counterState.removeListener(callback);
+    observableCounter.removeListener(callback);
     super.dispose();
   }
 }
