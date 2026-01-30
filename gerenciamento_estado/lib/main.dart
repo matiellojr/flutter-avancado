@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gerenciamento_estado/builders/observable_builder.dart';
 import 'package:gerenciamento_estado/classes/counter_state.dart';
 import 'package:gerenciamento_estado/controllers/state_observable.dart';
 
@@ -13,10 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: false
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: false),
       home: const MyHomePage(),
     );
   }
@@ -35,41 +33,53 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    counterState.addListener(callback);
     observableCounter.addListener(callback);
     super.initState();
   }
 
   void callback() {
-    setState(() {}); 
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Gerenciamento de Estado"),
-      ),
+      appBar: AppBar(title: const Text("Gerenciamento de Estado")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("Valor do estado do ChangeState: ${counterState.counter}"),
+            ObservableBuilder(
+              observable: counterState,
+              child: const Text("Este é um child fixo"),
+              builder: (context, child) {
+                return Column(
+                  children: [
+                    Text(
+                      "Valor do estado do ChangeStateBuilder: ${counterState.counter}",
+                    ),
+                    child!,
+                  ],
+                );
+              },
+            ),
             const SizedBox(height: 5),
             ElevatedButton(
               onPressed: () {
                 counterState.increment();
-              }, 
-              child:  const Text("Incrementar"),
+              },
+              child: const Text("Incrementar"),
             ),
             const SizedBox(height: 20),
-            Text("Valor do estado do StateObserver: ${observableCounter.state}"),
+            Text(
+              "Valor do estado do StateObserver: ${observableCounter.state}",
+            ),
             const SizedBox(height: 5),
             ElevatedButton(
               onPressed: () {
                 observableCounter.state++;
-              }, 
-              child:  const Text("Incrementar"),
+              },
+              child: const Text("Incrementar"),
             ),
           ],
         ),
@@ -78,8 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  void dispose() { 
-    counterState.removeListener(callback);
+  void dispose() {
     observableCounter.removeListener(callback);
     super.dispose();
   }
